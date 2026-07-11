@@ -1,0 +1,15 @@
+/* Spacing — 4px base, generous grid, 96px between bands */
+:root {
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-xxl: 64px;
+  --space-section: 96px;
+
+  /* Layout */
+  --content-max: 1440px;
+  --gutter: 24px;
+}

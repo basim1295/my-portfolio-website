@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 48" width="320" height="48" role="img" aria-label="Basim Shabir">
+  <g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" letter-spacing="1.5">
+    <text x="0" y="24" font-size="18" fill="#ffffff">BASIM SHABIR</text>
+  </g>
+  <g transform="translate(0,36)">
+    <rect x="0" y="0" width="40" height="4" fill="#0066b1"></rect>
+    <rect x="40" y="0" width="40" height="4" fill="#1c69d4"></rect>
+    <rect x="80" y="0" width="40" height="4" fill="#e22718"></rect>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+/* Colors — near-black canvas, white ink, sparing tricolor accent */
+:root {
+  /* Canvas & surface */
+  --canvas: #000000;
+  --surface-soft: #0d0d0d;
+  --surface-card: #1a1a1a;
+  --surface-elevated: #262626;
+  --carbon-gray: #2b2b2b;
+
+  /* Ink */
+  --ink: #ffffff;
+  --on-dark: #ffffff;
+  --on-primary: #000000;
+  --body: #bbbbbb;
+  --body-strong: #e6e6e6;
+  --muted: #7e7e7e;
+
+  /* Hairlines */
+  --hairline: #3c3c3c;
+  --hairline-strong: #262626;
+
+  /* Signature tricolor (light blue → dark blue → red) */
+  --stripe-blue-light: #0066b1;
+  --stripe-blue-dark: #1c69d4;
+  --stripe-red: #e22718;
+
+  /* Accents */
+  --accent-blue: #1c69d4;
+  --accent-blue-electric: #0653b6;
+
+  /* Semantic */
+  --warning: #f4b400;
+  --success: #0fa336;
+  --danger: #e22718;
+
+  /* Semantic aliases */
+  --text-primary: var(--ink);
+  --text-body: var(--body);
+  --text-muted: var(--muted);
+  --text-emphasis: var(--body-strong);
+  --bg-page: var(--canvas);
+  --border-default: var(--hairline);
+  --border-subtle: var(--hairline-strong);
+
+  /* Signature stripe as a linear-gradient value, ready for background: */
+  --stripe-gradient: linear-gradient(
+    to right,
+    var(--stripe-blue-light) 0%,
+    var(--stripe-blue-light) 33.33%,
+    var(--stripe-blue-dark) 33.33%,
+    var(--stripe-blue-dark) 66.66%,
+    var(--stripe-red) 66.66%,
+    var(--stripe-red) 100%
+  );
+}

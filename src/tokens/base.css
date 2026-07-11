@@ -1,0 +1,28 @@
+/* Global base — page floor is black, ink is white, body copy is Light 300. */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--canvas);
+  color: var(--on-dark);
+  font-family: var(--font-body);
+  font-size: var(--fs-body-md);
+  font-weight: var(--weight-light);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html { scroll-behavior: smooth; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+a {
+  color: var(--on-dark);
+  text-decoration: none;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+a:hover { opacity: 0.7; }
+
+img { display: block; max-width: 100%; }
+
+::selection { background: var(--stripe-red); color: var(--on-dark); }

@@ -1,0 +1,8 @@
+/* Radius — almost always zero. Circular only for icon buttons. */
+:root {
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-full: 9999px;
+}

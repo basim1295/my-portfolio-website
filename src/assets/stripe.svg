@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 4" width="300" height="4" preserveAspectRatio="none" role="img" aria-label="Signature stripe">
+  <rect x="0" y="0" width="100" height="4" fill="#0066b1"></rect>
+  <rect x="100" y="0" width="100" height="4" fill="#1c69d4"></rect>
+  <rect x="200" y="0" width="100" height="4" fill="#e22718"></rect>
+</svg>

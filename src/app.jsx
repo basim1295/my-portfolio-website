@@ -219,7 +219,7 @@ function Hero() {
 function Education() {
   return (
     <section id="education" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
-      <SectionHead eyebrow="Education" title="Trained in Melbourne." />
+      <SectionHead eyebrow="Education" />
       <div style={{ ...container }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, background: "var(--hairline-strong)" }}>
           {D.education.map((e, i) => (

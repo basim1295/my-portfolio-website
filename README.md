@@ -81,18 +81,28 @@ The React app. Contains one React component per section:
 Edit this file when you want to **change layout or add new sections**. If you just want to change **text or images**, edit `data.js` instead.
 
 ### `src/data.js` ⭐ (this is the file you'll edit most)
-All copy, images, projects, leadership entries, education entries, certifications, and skills. The React app reads everything from `window.PortfolioData` here.
+**100% of the text on the site lives here.** The React app reads everything from `window.PortfolioData`.
 
 Structure:
 - `profile` — name, tagline, location, résumé URL, LinkedIn URL, email, portrait path, intro paragraph
 - `education` — array of `{ degree, org, location, period, detail }`
-- `projects` — array of `{ id, name, specs, image, description, href }`
+- `projects` — array of `{ id, name, specs, image, description, link }`  (paste any URL into `link` to make the card clickable)
 - `workExperience` — array of orgs, each with roles and bullets
 - `leadership` — array of `{ role, org, period, summary, bullets, album }` — `album` is an array of image URLs/paths
 - `certifications` — array of `{ name, org, date }`
-- `skills` — array of strings
+- `skills` — array of strings (the toolkit chips)
+- `nav` — top-bar labels (`items[]`) and the Contact button label
+- `copy` — every heading, eyebrow, and button label on the page:
+  - `copy.hero` — hero eyebrow prefix + button labels
+  - `copy.sections.<section>` — `{ eyebrow, title }` for each of the 5 sections
+  - `copy.projectCard.linkLabel` — "Explore this project →"
+  - `copy.techToolkitLabel` — the little label above the skills chips
+  - `copy.cta` — pre-footer CTA band (headline, subhead, action label, image)
+  - `copy.footer` — footer column titles, "Currently" bullet points, fineprint
 
 **To swap an image**, replace the URL/path here. See "Adding your own images" below.
+
+**To rename a section headline** (e.g. change "Where I've built." to "Career."), edit `copy.sections.workExperience.title` — no need to touch `app.jsx`.
 
 ### `src/styles.css`
 Single-line file that `@import`s every token file. **Don't add rules here directly** — put design tokens in `tokens/` and inline styles inside components.
@@ -145,8 +155,22 @@ CSS custom properties in tokens/ style everything
 ### Change the intro copy
 `data.js` → `profile.intro` and `profile.tagline`.
 
+### Change a section headline (e.g. "Projects." → "Case studies.")
+`data.js` → `copy.sections.projects.title`.
+
+### Rename a nav item
+`data.js` → `nav.items[i].label`. Keep the `href` unchanged — it points to the section anchor.
+
+### Change the pre-footer CTA text
+`data.js` → `copy.cta.headline` / `subhead` / `actionLabel`.
+
 ### Add / remove / reorder projects
 `data.js` → `projects` array. The grid auto-fills.
+
+### Make a project card clickable (link to a repo, notebook, doc, etc.)
+`data.js` → the project's `link` field. Paste **any URL** — GitHub, Vercel deployment, Google Doc, Colab/Jupyter notebook, YouTube demo, PDF, arXiv, Medium article. The whole card becomes a link that opens in a new tab, and an "Explore this project →" label appears at the bottom.
+
+Leave `link` as `""` (empty string) if there's nothing to link to yet — the card still shows image/title/description, just isn't clickable.
 
 ### Update a leadership role's bullets
 `data.js` → `leadership[i].bullets` (array of strings).
@@ -225,5 +249,8 @@ When you're ready to publish (Vercel, Netlify, GitHub Pages, etc.):
 - **2026-07-11** — Initial site: hero, education, 4 projects, BYJU'S work timeline, 3 leadership entries with photo albums + lightbox, certifications + tech toolkit, CTA band, footer, anchor-scroll nav.
 - **2026-07-11** — Fixed horizontal overflow caused by the leadership album scroller (added `min-width: 0` on grid children).
 - **2026-07-12** — Added this README.
+- **2026-07-12** — Moved all remaining hard-coded text (section headlines, nav labels, CTA band, footer columns) into `data.js` under `copy` and `nav`. `data.js` is now the single source of truth for every string on the page.
+- **2026-07-12** — Renamed `projects[].href` → `projects[].link` for clarity. Paste any URL (repo, notebook, doc, deployed app) into `link` and the whole card becomes clickable. Empty string = card isn't linked.
+- **2026-07-12** — Added optional `logo` field to education entries. If an entry has `logo: "assets/xyz.png"`, the logo renders on the right side of that education card at 120×120 (contain-fit, slight opacity). Entries without `logo` render text-only.
 
 *Update this section whenever you (or Claude) make a meaningful change to the site.*

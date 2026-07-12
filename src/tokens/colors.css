@@ -20,18 +20,18 @@
   --hairline-strong: #262626;
 
   /* Signature tricolor (light blue → dark blue → red) */
-  --stripe-blue-light: #0066b1;
-  --stripe-blue-dark: #1c69d4;
-  --stripe-red: #e22718;
+  --stripe-blue-light: #f97316;
+  --stripe-blue-dark: #ec4899;
+  --stripe-red: #8b5cf6 ;
 
   /* Accents */
-  --accent-blue: #1c69d4;
+  --accent-blue: #0066ff;
   --accent-blue-electric: #0653b6;
 
   /* Semantic */
   --warning: #f4b400;
   --success: #0fa336;
-  --danger: #e22718;
+  --danger: #ff5252;
 
   /* Semantic aliases */
   --text-primary: var(--ink);

@@ -10,7 +10,6 @@ const {
   StatCell,
   CarouselArrow,
   CtaBand,
-  Footer,
 } = DS;
 
 // Local project card — same silhouette as DS ProjectCard but without the
@@ -77,6 +76,7 @@ function ProjectCard({ image, imageAlt = "", name, specs, description, href }) {
           lineHeight: 1.6,
           color: "var(--body)",
           maxWidth: "56ch",
+          textAlign: "justify",
         }}>
           {description}
         </p>
@@ -90,7 +90,7 @@ function ProjectCard({ image, imageAlt = "", name, specs, description, href }) {
           textTransform: "uppercase",
           color: "var(--on-dark)",
         }}>
-          Explore this project →
+          {window.PortfolioData.copy.projectCard.linkLabel}
         </span>
       ) : null}
     </Wrap>
@@ -98,6 +98,150 @@ function ProjectCard({ image, imageAlt = "", name, specs, description, href }) {
 }
 
 const D = window.PortfolioData;
+const C = D.copy;
+
+// ─────────────────────────────────────────────────────────────
+// Contact modal — opened from the "Contact" button in the top nav
+// ─────────────────────────────────────────────────────────────
+function ContactModal({ open, onClose }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const options = [
+    {
+      label: "Email",
+      value: D.profile.email,
+      href: `mailto:${D.profile.email}`,
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="0" />
+          <path d="M3 7l9 6 9-6" />
+        </svg>
+      ),
+    },
+    {
+      label: "LinkedIn",
+      value: D.profile.linkedinUrl.replace(/^https?:\/\//, ""),
+      href: D.profile.linkedinUrl,
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h4v16H4z" />
+          <circle cx="6" cy="4.5" r="1" fill="currentColor" stroke="none" />
+          <path d="M10 9h4v2c.7-1.3 2-2.2 3.5-2.2 3 0 3.5 2 3.5 4.5V20h-4v-6c0-1.3-.5-2-1.8-2s-1.7.8-1.7 2.2V20h-4V9z" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Contact"
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.92)",
+        zIndex: 300,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "var(--space-xl)",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%",
+          maxWidth: 560,
+          background: "var(--surface-soft)",
+          border: "1px solid var(--hairline)",
+          padding: "var(--space-xxl)",
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            position: "absolute",
+            top: "var(--space-md)",
+            right: "var(--space-md)",
+            background: "transparent",
+            border: "none",
+            color: "var(--on-dark)",
+            cursor: "pointer",
+            width: 36,
+            height: 36,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+
+        <p style={{ ...eyebrow, color: "var(--body)" }}>Contact</p>
+        <h2 style={{ ...h2, fontSize: "var(--fs-display-md)", marginTop: "var(--space-sm)" }}>Get in touch</h2>
+        <div style={{ marginTop: "var(--space-md)" }}>
+          <MStripe width={120} />
+        </div>
+        <p style={{ ...body, marginTop: "var(--space-lg)", maxWidth: "44ch" }}>
+          Happy to hear from you :)
+        </p>
+
+        <div style={{ marginTop: "var(--space-xl)", display: "grid", gridTemplateColumns: "1fr", gap: 1, background: "var(--hairline-strong)", border: "1px solid var(--hairline-strong)" }}>
+          {options.map((o) => (
+            <a
+              key={o.label}
+              href={o.href}
+              target={o.href.startsWith("http") ? "_blank" : undefined}
+              rel={o.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-lg)",
+                padding: "var(--space-lg)",
+                background: "var(--surface-card)",
+                color: "var(--on-dark)",
+                textDecoration: "none",
+                transition: "background var(--duration-base) var(--ease-standard)",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-elevated)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--surface-card)"; }}
+            >
+              <div style={{ width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--canvas)", border: "1px solid var(--hairline-strong)", flexShrink: 0 }}>
+                {o.icon}
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p style={{ ...eyebrow, color: "var(--muted)" }}>{o.label}</p>
+                <p style={{ ...body, marginTop: "var(--space-xxs)", color: "var(--on-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {o.value}
+                </p>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: "var(--body)" }}>
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────
 // Shared style tokens
@@ -182,9 +326,9 @@ function Hero() {
     <section id="intro" style={{ paddingTop: "calc(64px + var(--space-section))", paddingBottom: "var(--space-section)" }}>
       <div style={{ ...container, display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "var(--space-xxl)", alignItems: "center" }}>
         <div>
-          <p style={eyebrow}>Hello there · {p.location}</p>
+          {/* <p style={eyebrow}>{C.hero.eyebrow}  {p.location}</p> */}
           <h1 style={{ ...h2, fontSize: "var(--fs-display-xl)", lineHeight: 1, marginTop: "var(--space-lg)" }}>
-            {p.name}.
+            {p.name}
           </h1>
           <div style={{ marginTop: "var(--space-md)" }}>
             <MStripe width={160} />
@@ -192,12 +336,12 @@ function Hero() {
           <h2 style={{ ...h3, fontSize: "var(--fs-display-md)", color: "var(--body-strong)", marginTop: "var(--space-lg)" }}>
             {p.tagline}
           </h2>
-          <p style={{ ...lead, marginTop: "var(--space-xl)", maxWidth: "56ch" }}>
+          <p style={{ ...lead, marginTop: "var(--space-xl)", maxWidth: "56ch", textAlign: "justify" }}>
             {p.intro}
           </p>
           <div style={{ marginTop: "var(--space-xxl)", display: "flex", gap: "var(--space-md)", flexWrap: "wrap" }}>
-            <Button href={p.resumeUrl}>Download résumé</Button>
-            <Button href={p.linkedinUrl} variant="outline">LinkedIn</Button>
+            <Button href={p.resumeUrl}>{C.hero.resumeButton}</Button>
+            <Button href={p.linkedinUrl} variant="outline">{C.hero.linkedinButton}</Button>
           </div>
         </div>
         <div style={{ position: "relative" }}>
@@ -219,19 +363,28 @@ function Hero() {
 function Education() {
   return (
     <section id="education" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
-      <SectionHead eyebrow="Education" />
+      <SectionHead eyebrow={C.sections.education.eyebrow} title={C.sections.education.title} />
       <div style={{ ...container }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, background: "var(--hairline-strong)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${D.education.length}, 1fr)`, gap: 1, background: "var(--hairline-strong)" }}>
           {D.education.map((e, i) => (
-            <div key={i} style={{ background: "var(--surface-soft)", padding: "var(--space-xl)" }}>
-              <p style={{ ...eyebrow, color: "var(--muted)" }}>{e.period}</p>
-              <h3 style={{ ...h3, marginTop: "var(--space-md)" }}>{e.degree}</h3>
-              <p style={{ ...body, marginTop: "var(--space-md)", color: "var(--body-strong)" }}>
-                {e.org}
-              </p>
-              <p style={{ ...body, marginTop: "var(--space-xs)", color: "var(--muted)" }}>
-                {e.location} · {e.detail}
-              </p>
+            <div key={i} style={{ background: "var(--surface-soft)", padding: "var(--space-xl)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-lg)" }}>
+              <div>
+                <p style={{ ...eyebrow, color: "var(--muted)" }}>{e.period}</p>
+                <h3 style={{ ...h3, marginTop: "var(--space-md)" }}>{e.degree}</h3>
+                <p style={{ ...body, marginTop: "var(--space-md)", color: "var(--body-strong)" }}>
+                  {e.org}
+                </p>
+                <p style={{ ...body, marginTop: "var(--space-xs)", color: "var(--muted)" }}>
+                  {e.location} · {e.detail}
+                </p>
+              </div>
+              {e.logo && (
+                <img
+                  src={e.logo}
+                  alt={`${e.org} logo`}
+                  style={{ width: 120, height: 120, objectFit: "contain", flexShrink: 0, opacity: 0.9 }}
+                />
+              )}
             </div>
           ))}
         </div>
@@ -246,7 +399,7 @@ function Education() {
 function Projects() {
   return (
     <section id="projects" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
-      <SectionHead eyebrow="Selected work" title="Projects." />
+      <SectionHead eyebrow={C.sections.projects.eyebrow} title={C.sections.projects.title} />
       <div style={{ ...container }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "var(--space-xxl)" }}>
           {D.projects.map((p) => (
@@ -257,7 +410,7 @@ function Projects() {
               name={p.name}
               specs={p.specs}
               description={p.description}
-              href={p.href}
+              href={p.link || p.href}
             />
           ))}
         </div>
@@ -272,7 +425,7 @@ function Projects() {
 function WorkExperience() {
   return (
     <section id="work-ex" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
-      <SectionHead eyebrow="Work experience" title="Where I've built." />
+      <SectionHead eyebrow={C.sections.workExperience.eyebrow} title={C.sections.workExperience.title} />
       <div style={{ ...container }}>
         {D.workExperience.map((org, i) => (
           <div key={i}>
@@ -293,7 +446,7 @@ function WorkExperience() {
                   </div>
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
                     {r.bullets.map((b, k) => (
-                      <li key={k} style={{ ...body, paddingLeft: "var(--space-md)", borderLeft: "1px solid var(--hairline)" }}>
+                      <li key={k} style={{ ...body, paddingLeft: "var(--space-md)", borderLeft: "1px solid var(--hairline)", textAlign: "justify" }}>
                         {b}
                       </li>
                     ))}
@@ -411,10 +564,10 @@ function LeadershipItem({ item, index }) {
           <p style={{ ...body, marginTop: "var(--space-sm)", color: "var(--body-strong)", fontSize: "var(--fs-title-sm)" }}>
             {item.org}
           </p>
-          <p style={{ ...lead, marginTop: "var(--space-lg)" }}>{item.summary}</p>
+          <p style={{ ...lead, marginTop: "var(--space-lg)", textAlign: "justify" }}>{item.summary}</p>
           <ul style={{ margin: "var(--space-lg) 0 0 0", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
             {item.bullets.map((b, i) => (
-              <li key={i} style={{ ...body, paddingLeft: "var(--space-md)", borderLeft: "1px solid var(--hairline)" }}>
+              <li key={i} style={{ ...body, paddingLeft: "var(--space-md)", borderLeft: "1px solid var(--hairline)", textAlign: "justify" }}>
                 {b}
               </li>
             ))}
@@ -431,7 +584,7 @@ function LeadershipItem({ item, index }) {
 function Leadership() {
   return (
     <section id="leadership" style={{ paddingTop: "var(--space-section)", paddingBottom: "var(--space-section)", borderTop: "1px solid var(--hairline-strong)" }}>
-      <SectionHead eyebrow="Leadership" title="Communities I've led." />
+      <SectionHead eyebrow={C.sections.leadership.eyebrow} title={C.sections.leadership.title} />
       {D.leadership.map((item, i) => (
         <LeadershipItem key={item.id} item={item} index={i} />
       ))}
@@ -445,7 +598,7 @@ function Leadership() {
 function Certifications() {
   return (
     <section id="certifications" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
-      <SectionHead eyebrow="Certifications" title="Credentials." />
+      <SectionHead eyebrow={C.sections.certifications.eyebrow} title={C.sections.certifications.title} />
       <div style={{ ...container }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "var(--hairline-strong)" }}>
           {D.certifications.map((c, i) => (
@@ -462,7 +615,7 @@ function Certifications() {
         </div>
 
         <div style={{ marginTop: "var(--space-xxl)" }}>
-          <p style={{ ...eyebrow, color: "var(--muted)" }}>Technical toolkit</p>
+          <p style={{ ...eyebrow, color: "var(--muted)" }}>{C.techToolkitLabel}</p>
           <div style={{ marginTop: "var(--space-md)", display: "flex", flexWrap: "wrap", gap: "var(--space-sm)" }}>
             {D.skills.map((s) => (
               <span
@@ -490,31 +643,25 @@ function Certifications() {
 // App shell
 // ─────────────────────────────────────────────────────────────
 function App() {
-  const navItems = [
-    { label: "Intro", href: "#intro" },
-    { label: "Projects", href: "#projects" },
-    { label: "Work Ex", href: "#work-ex" },
-    { label: "Leadership", href: "#leadership" },
-    { label: "Certifications", href: "#certifications" },
-  ];
+  const navItems = D.nav.items;
 
-  const [active, setActive] = useState("Intro");
+  const [active, setActive] = useState(navItems[0]?.label || "Intro");
+  const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
-    const ids = ["intro", "projects", "work-ex", "leadership", "certifications"];
     const labelByHref = Object.fromEntries(navItems.map((n) => [n.href.slice(1), n.label]));
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActive(labelByHref[entry.target.id] || "Intro");
+            setActive(labelByHref[entry.target.id] || navItems[0]?.label);
           }
         });
       },
       { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
     );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
+    navItems.forEach((n) => {
+      const el = document.getElementById(n.href.slice(1));
       if (el) io.observe(el);
     });
     return () => io.disconnect();
@@ -538,8 +685,8 @@ function App() {
         active={active}
         onItemClick={onNavClick}
         utilities={
-          <Button size="sm" href={`mailto:${D.profile.email}`}>
-            Contact
+          <Button size="sm" onClick={() => setContactOpen(true)}>
+            {D.nav.contactButtonLabel}
           </Button>
         }
         sticky
@@ -554,44 +701,13 @@ function App() {
       <Certifications />
 
       <CtaBand
-        headline="Let's talk."
-        subhead="Open to graduate roles in data science, AI consulting, and applied ML across Australia and APAC."
-        image="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=2000&q=80"
-        action={<Button variant="outline" href={`mailto:${D.profile.email}`}>Get in touch</Button>}
+        headline={C.cta.headline}
+        subhead={C.cta.subhead}
+        image={C.cta.image}
+        action={<Button variant="outline" onClick={() => setContactOpen(true)}>{C.cta.actionLabel}</Button>}
       />
 
-      <Footer
-        brand={D.profile.name}
-        columns={[
-          {
-            title: "Site",
-            links: [
-              { label: "Intro", href: "#intro" },
-              { label: "Projects", href: "#projects" },
-              { label: "Work experience", href: "#work-ex" },
-              { label: "Leadership", href: "#leadership" },
-              { label: "Certifications", href: "#certifications" },
-            ],
-          },
-          {
-            title: "Contact",
-            links: [
-              { label: D.profile.email, href: `mailto:${D.profile.email}` },
-              { label: "LinkedIn", href: D.profile.linkedinUrl },
-              { label: "Résumé (PDF)", href: D.profile.resumeUrl },
-            ],
-          },
-          {
-            title: "Currently",
-            links: [
-              { label: "Melbourne, AEST" },
-              { label: "Master of Data Science · Monash" },
-              { label: "Available Q3 2026" },
-            ],
-          },
-        ]}
-        fineprint={`© ${new Date().getFullYear()} Basim Shabir. All rights reserved.`}
-      />
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   );
 }

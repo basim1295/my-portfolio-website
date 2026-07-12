@@ -101,9 +101,65 @@ const D = window.PortfolioData;
 const C = D.copy;
 
 // ─────────────────────────────────────────────────────────────
+// Cursor spotlight — a soft radial glow that trails the cursor.
+// Adds ambient depth. Fixed, non-interactive, sits above the
+// glitter canvas but under content.
+// ─────────────────────────────────────────────────────────────
+function CursorSpotlight() {
+  const ref = useRef(null);
+  const target = useRef({ x: -9999, y: -9999 });
+  const pos = useRef({ x: -9999, y: -9999 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onMove = (e) => {
+      target.current.x = e.clientX;
+      target.current.y = e.clientY;
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+
+    let raf;
+    const step = () => {
+      // Easing — the glow lags slightly behind the cursor for a soft feel.
+      pos.current.x += (target.current.x - pos.current.x) * 0.12;
+      pos.current.y += (target.current.y - pos.current.y) * 0.12;
+      el.style.transform = `translate3d(${pos.current.x - 300}px, ${pos.current.y - 300}px, 0)`;
+      raf = requestAnimationFrame(step);
+    };
+    step();
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: 600,
+        height: 600,
+        pointerEvents: "none",
+        zIndex: 0,
+        background: "radial-gradient(circle at center, rgba(249,115,22,0.10) 0%, rgba(236,72,153,0.06) 30%, rgba(139,92,246,0.04) 55%, rgba(0,0,0,0) 70%)",
+        mixBlendMode: "screen",
+        willChange: "transform",
+      }}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // Glitter background — canvas of drifting, twinkling particles
-// Sits fixed behind all content. Never blocks clicks. Respects
-// prefers-reduced-motion (falls back to a still starfield).
+// plus slow ambient tinted blobs behind them. Sits fixed behind
+// all content. Never blocks clicks. Respects prefers-reduced-motion.
 // ─────────────────────────────────────────────────────────────
 function GlitterBackground() {
   const ref = useRef(null);
@@ -125,6 +181,7 @@ function GlitterBackground() {
 
     let width = 0, height = 0;
     let particles = [];
+    let blobs = [];
     let raf = null;
 
     function resize() {
@@ -138,40 +195,82 @@ function GlitterBackground() {
     }
 
     function seed() {
-      // Density: ~1 particle per 12,000 px². Caps at 200 for large screens.
-      const count = Math.min(200, Math.max(60, Math.floor((width * height) / 12000)));
+      // Density: ~1 particle per 9,000 px². Caps at 260 for large screens.
+      const count = Math.min(260, Math.max(80, Math.floor((width * height) / 9000)));
       particles = Array.from({ length: count }, () => {
-        const tinted = Math.random() < 0.1;
+        const tinted = Math.random() < 0.15;
+        const hero = Math.random() < 0.06; // ~6% are bigger "hero" sparkles
         return {
           x: Math.random() * width,
           y: Math.random() * height,
-          r: Math.random() * 1.1 + 0.25,          // 0.25 – 1.35 px
-          vx: (Math.random() - 0.5) * 0.12,       // very slow drift
-          vy: (Math.random() - 0.5) * 0.12,
-          phase: Math.random() * Math.PI * 2,     // for twinkle
-          speed: 0.006 + Math.random() * 0.014,   // twinkle rate
+          r: hero ? (1.6 + Math.random() * 1.4) : (Math.random() * 1.2 + 0.3), // hero: 1.6–3, normal: 0.3–1.5
+          vx: (Math.random() - 0.5) * 0.16,
+          vy: (Math.random() - 0.5) * 0.16,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.008 + Math.random() * 0.018,
           tint: tinted ? tints[1 + Math.floor(Math.random() * 3)] : tints[0],
-          maxAlpha: 0.25 + Math.random() * 0.45,  // upper alpha cap per particle
+          maxAlpha: hero ? (0.55 + Math.random() * 0.35) : (0.25 + Math.random() * 0.45),
+          hero,
         };
       });
+
+      // 3 ambient tinted blobs that drift slowly. One per stripe colour.
+      blobs = [
+        { tint: tints[1], x: width * 0.15, y: height * 0.25, vx: 0.08, vy: 0.04, radius: Math.min(width, height) * 0.55, alpha: 0.09 },
+        { tint: tints[2], x: width * 0.75, y: height * 0.6, vx: -0.06, vy: -0.05, radius: Math.min(width, height) * 0.6, alpha: 0.08 },
+        { tint: tints[3], x: width * 0.45, y: height * 0.85, vx: 0.05, vy: -0.07, radius: Math.min(width, height) * 0.5, alpha: 0.09 },
+      ];
+    }
+
+    function drawBlobs() {
+      for (const b of blobs) {
+        b.x += b.vx;
+        b.y += b.vy;
+        // Bounce off viewport edges so blobs stay roughly on screen.
+        if (b.x < -b.radius * 0.3 || b.x > width + b.radius * 0.3) b.vx *= -1;
+        if (b.y < -b.radius * 0.3 || b.y > height + b.radius * 0.3) b.vy *= -1;
+
+        const [r, g, b_] = b.tint;
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
+        grad.addColorStop(0, `rgba(${r},${g},${b_},${b.alpha})`);
+        grad.addColorStop(0.6, `rgba(${r},${g},${b_},${b.alpha * 0.25})`);
+        grad.addColorStop(1, `rgba(${r},${g},${b_},0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(b.x - b.radius, b.y - b.radius, b.radius * 2, b.radius * 2);
+      }
     }
 
     function frame() {
       ctx.clearRect(0, 0, width, height);
+
+      // Layer 1: ambient tinted blobs (behind particles).
+      drawBlobs();
+
+      // Layer 2: sparkling particles.
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
         p.phase += p.speed;
 
-        // Wrap around the viewport so drifting particles never disappear.
         if (p.x < -2) p.x = width + 2;
         else if (p.x > width + 2) p.x = -2;
         if (p.y < -2) p.y = height + 2;
         else if (p.y > height + 2) p.y = -2;
 
-        // Sine-wave twinkle in [0, maxAlpha].
         const alpha = ((Math.sin(p.phase) + 1) / 2) * p.maxAlpha;
         const [r, g, b] = p.tint;
+
+        if (p.hero) {
+          // Hero sparkles get a soft halo for extra glow.
+          const halo = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+          halo.addColorStop(0, `rgba(${r},${g},${b},${(alpha * 0.6).toFixed(3)})`);
+          halo.addColorStop(1, `rgba(${r},${g},${b},0)`);
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
@@ -264,6 +363,16 @@ function ContactModal({ open, onClose }) {
           <path d="M4 4h4v16H4z" />
           <circle cx="6" cy="4.5" r="1" fill="currentColor" stroke="none" />
           <path d="M10 9h4v2c.7-1.3 2-2.2 3.5-2.2 3 0 3.5 2 3.5 4.5V20h-4v-6c0-1.3-.5-2-1.8-2s-1.7.8-1.7 2.2V20h-4V9z" />
+        </svg>
+      ),
+    },
+    {
+      label: "GitHub",
+      value: D.profile.githubUrl.replace(/^https?:\/\//, ""),
+      href: D.profile.githubUrl,
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 19c-4 1.5-4-2-6-2m12 4v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
         </svg>
       ),
     },
@@ -449,7 +558,7 @@ function SectionHead({ eyebrow: eb, title, action }) {
 function Hero() {
   const p = D.profile;
   return (
-    <section id="intro" style={{ paddingTop: "calc(64px + var(--space-section))", paddingBottom: "var(--space-section)" }}>
+    <section id="intro" data-reveal style={{ paddingTop: "calc(64px + var(--space-section))", paddingBottom: "var(--space-section)" }}>
       <div style={{ ...container, display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "var(--space-xxl)", alignItems: "center" }}>
         <div>
           {/* <p style={eyebrow}>{C.hero.eyebrow}  {p.location}</p> */}
@@ -468,6 +577,7 @@ function Hero() {
           <div style={{ marginTop: "var(--space-xxl)", display: "flex", gap: "var(--space-md)", flexWrap: "wrap" }}>
             <Button href={p.resumeUrl}>{C.hero.resumeButton}</Button>
             <Button href={p.linkedinUrl} variant="outline">{C.hero.linkedinButton}</Button>
+            <Button href={p.githubUrl} variant="outline">{C.hero.githubButton}</Button>
           </div>
         </div>
         <div style={{ position: "relative" }}>
@@ -488,7 +598,7 @@ function Hero() {
 // ─────────────────────────────────────────────────────────────
 function Education() {
   return (
-    <section id="education" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
+    <section id="education" data-reveal style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
       <SectionHead eyebrow={C.sections.education.eyebrow} title={C.sections.education.title} />
       <div style={{ ...container }}>
         <div style={{ display: "grid", gridTemplateColumns: `repeat(${D.education.length}, 1fr)`, gap: 1, background: "var(--hairline-strong)" }}>
@@ -524,7 +634,7 @@ function Education() {
 // ─────────────────────────────────────────────────────────────
 function Projects() {
   return (
-    <section id="projects" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
+    <section id="projects" data-reveal style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
       <SectionHead eyebrow={C.sections.projects.eyebrow} title={C.sections.projects.title} />
       <div style={{ ...container }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "var(--space-xxl)" }}>
@@ -550,7 +660,7 @@ function Projects() {
 // ─────────────────────────────────────────────────────────────
 function WorkExperience() {
   return (
-    <section id="work-ex" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
+    <section id="work-ex" data-reveal style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
       <SectionHead eyebrow={C.sections.workExperience.eyebrow} title={C.sections.workExperience.title} />
       <div style={{ ...container }}>
         {D.workExperience.map((org, i) => (
@@ -709,7 +819,7 @@ function LeadershipItem({ item, index }) {
 
 function Leadership() {
   return (
-    <section id="leadership" style={{ paddingTop: "var(--space-section)", paddingBottom: "var(--space-section)", borderTop: "1px solid var(--hairline-strong)" }}>
+    <section id="leadership" data-reveal style={{ paddingTop: "var(--space-section)", paddingBottom: "var(--space-section)", borderTop: "1px solid var(--hairline-strong)" }}>
       <SectionHead eyebrow={C.sections.leadership.eyebrow} title={C.sections.leadership.title} />
       {D.leadership.map((item, i) => (
         <LeadershipItem key={item.id} item={item} index={i} />
@@ -723,7 +833,7 @@ function Leadership() {
 // ─────────────────────────────────────────────────────────────
 function Certifications() {
   return (
-    <section id="certifications" style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
+    <section id="certifications" data-reveal style={{ padding: "var(--space-section) 0", borderTop: "1px solid var(--hairline-strong)" }}>
       <SectionHead eyebrow={C.sections.certifications.eyebrow} title={C.sections.certifications.title} />
       <div style={{ ...container }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "var(--hairline-strong)" }}>
@@ -793,6 +903,30 @@ function App() {
     return () => io.disconnect();
   }, []);
 
+  // Fade sections in as they scroll into view. Uses scroll listener
+  // (rather than IntersectionObserver) for maximum compatibility.
+  useEffect(() => {
+    const targets = Array.from(document.querySelectorAll("[data-reveal]"));
+    const check = () => {
+      const h = window.innerHeight;
+      for (const el of targets) {
+        if (el.classList.contains("is-visible")) continue;
+        const rect = el.getBoundingClientRect();
+        // Reveal once the top edge crosses 92% of the viewport height.
+        if (rect.top < h * 0.92 && rect.bottom > 0) {
+          el.classList.add("is-visible");
+        }
+      }
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, []);
+
   const onNavClick = (item, e) => {
     e.preventDefault();
     const id = item.href.slice(1);
@@ -806,6 +940,7 @@ function App() {
   return (
     <div style={{ background: "var(--canvas)", color: "var(--on-dark)", minHeight: "100vh", position: "relative" }}>
       <GlitterBackground />
+      <CursorSpotlight />
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopNav
         brand={D.profile.name}

@@ -7,6 +7,7 @@ window.PortfolioData = {
     // location: "Melbourne, VIC · Australia",
     resumeUrl: "assets/Basim_Shabir_resume.pdf",
     linkedinUrl: "https://linkedin.com/in/basimshabir",
+    githubUrl: "https://github.com/basim1295",
     email: "basimkhan09@gmail.com",
     portrait: "assets/portrait.jpg",
     intro: "I'm happiest when I'm standing between a technical problem and the person who actually has to use the answer. My thesis with Alfred Health on using ML in determining patient outcomes, bridging teams at my worplace - BYJU'S, and leading a 2000+ members strong student team at Monash have all pointed me the same direction: someone who wants to take technical understanding, use his peoples skills and actually close the gap with it. I want to help people see what data science and AI really are, and how they can do good beyond the hype. That's the exactly why data & AI consulting compliments me, and it's where I'm headed.",
@@ -44,8 +45,7 @@ window.PortfolioData = {
       id: "cancer-treatment",
       name: "PREDICTING TREATMENT RESPONSE IN MELANOMA WITH DEEP LEARNING",
       specs: "Monash × Alfred Health · Minor Thesis · Jul 2025 – Jun 2026",
-      image:
-        "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=1200&q=80",
+      image: "assets/pet-ct.jpg",
       description:
         "AI-powered decision-support tool for oncology, built to help distinguish real cancer progression from treatment-related effects in melanoma patients on immunotherapy. Surfaced CT texture features as the strongest discriminators between patient classes - a finding that directly informs treatment decisions.",
       link: "EXPLORE THIS PROJECT →",
@@ -54,8 +54,7 @@ window.PortfolioData = {
       id: "resume-tailor",
       name: "Resume Tailor",
       specs: "Full-stack AI app · FastAPI + React · deployed on Vercel",
-      image:
-        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
+      image: "assets/resume-tailor.jpg",
       description:
         "AI-powered web app that tailors resumes to specific job descriptions using the Claude API — built and shipped end to end, from prompt design to production deployment.",
       link: "https://resume-tailor-omega-rosy.vercel.app",
@@ -152,10 +151,13 @@ leadership: [
         "Owned the society's budget and operational reporting end-to-end, aligning university administration, the Graduate Students Association, faculty partners, and external stakeholders behind a single plan.",
       ],
       album: [
-        "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=900&q=80",
-        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=900&q=80",
-        "https://images.unsplash.com/photo-1560439514-4e9645039924?w=900&q=80",
-        "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=900&q=80",
+        "assets/leadership/president-bootcamp-1.JPG",
+        "assets/leadership/president-bootcamp-2.JPG",
+        "assets/leadership/president-bootcamp-3.JPG",
+        "assets/leadership/president-datawaves-1.JPG",
+        "assets/leadership/president-datawaves-2.JPG",
+        "assets/leadership/president-datawaves-3.JPG",
+        "assets/leadership/president-o-week.JPG",
       ],
     },
     {
@@ -171,9 +173,11 @@ leadership: [
             "Stepped up as a key decision-maker alongside the President and executive committee, shaping team structure, operational planning, and society governance.",
           ],
           album: [
-            "https://images.unsplash.com/photo-1515168833906-d2a3b82b1a48?w=900&q=80",
-            "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=900&q=80",
-            "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=900&q=80",
+            "assets/leadership/vp-datawaves-1.JPG",
+            "assets/leadership/vp-datawaves-2.JPG",
+            "assets/leadership/vp-workshop-1.JPG",
+            "assets/leadership/vp-workshop-2.JPG",
+            "assets/leadership/vp-without-ml-3.JPG",
           ],
         },
     {
@@ -187,8 +191,7 @@ leadership: [
         "Designed and pitched a solution to help low-English-confidence students in Victoria build communication skills and break down language barriers.",
       ],
       album: [
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=80",
-        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=900&q=80",
+        "assets/leadership/4impact.jpg",
       ],
     },
   ],
@@ -259,6 +262,7 @@ certifications: [
       // eyebrow: "Hello there",           // appended with " · <location>"
       resumeButton: "Download résume",
       linkedinButton: "My Linkedin",
+      githubButton: "My GitHub",
     },
 
     // Each section has an uppercase eyebrow + a big display title.

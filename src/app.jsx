@@ -101,6 +101,132 @@ const D = window.PortfolioData;
 const C = D.copy;
 
 // ─────────────────────────────────────────────────────────────
+// Glitter background — canvas of drifting, twinkling particles
+// Sits fixed behind all content. Never blocks clicks. Respects
+// prefers-reduced-motion (falls back to a still starfield).
+// ─────────────────────────────────────────────────────────────
+function GlitterBackground() {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+    // The tricolor from tokens/colors.css — used to tint ~10% of particles.
+    const tints = [
+      [255, 255, 255],   // white (majority)
+      [249, 115, 22],    // stripe colour 1
+      [236, 72, 153],    // stripe colour 2
+      [139, 92, 246],    // stripe colour 3
+    ];
+
+    let width = 0, height = 0;
+    let particles = [];
+    let raf = null;
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * DPR);
+      canvas.height = Math.floor(height * DPR);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
+    function seed() {
+      // Density: ~1 particle per 12,000 px². Caps at 200 for large screens.
+      const count = Math.min(200, Math.max(60, Math.floor((width * height) / 12000)));
+      particles = Array.from({ length: count }, () => {
+        const tinted = Math.random() < 0.1;
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.1 + 0.25,          // 0.25 – 1.35 px
+          vx: (Math.random() - 0.5) * 0.12,       // very slow drift
+          vy: (Math.random() - 0.5) * 0.12,
+          phase: Math.random() * Math.PI * 2,     // for twinkle
+          speed: 0.006 + Math.random() * 0.014,   // twinkle rate
+          tint: tinted ? tints[1 + Math.floor(Math.random() * 3)] : tints[0],
+          maxAlpha: 0.25 + Math.random() * 0.45,  // upper alpha cap per particle
+        };
+      });
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.phase += p.speed;
+
+        // Wrap around the viewport so drifting particles never disappear.
+        if (p.x < -2) p.x = width + 2;
+        else if (p.x > width + 2) p.x = -2;
+        if (p.y < -2) p.y = height + 2;
+        else if (p.y > height + 2) p.y = -2;
+
+        // Sine-wave twinkle in [0, maxAlpha].
+        const alpha = ((Math.sin(p.phase) + 1) / 2) * p.maxAlpha;
+        const [r, g, b] = p.tint;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
+        ctx.fill();
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    function drawStill() {
+      // Reduced-motion fallback — single render, no animation loop.
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        const [r, g, b] = p.tint;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${(p.maxAlpha * 0.5).toFixed(3)})`;
+        ctx.fill();
+      }
+    }
+
+    resize();
+    seed();
+    if (reduceMotion) drawStill();
+    else frame();
+
+    const onResize = () => {
+      resize();
+      seed();
+      if (reduceMotion) drawStill();
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={ref}
+      aria-hidden="true"
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // Contact modal — opened from the "Contact" button in the top nav
 // ─────────────────────────────────────────────────────────────
 function ContactModal({ open, onClose }) {
@@ -678,7 +804,9 @@ function App() {
   };
 
   return (
-    <div style={{ background: "var(--canvas)", color: "var(--on-dark)", minHeight: "100vh" }}>
+    <div style={{ background: "var(--canvas)", color: "var(--on-dark)", minHeight: "100vh", position: "relative" }}>
+      <GlitterBackground />
+      <div style={{ position: "relative", zIndex: 1 }}>
       <TopNav
         brand={D.profile.name}
         items={navItems}
@@ -708,6 +836,7 @@ function App() {
       />
 
       <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
+      </div>
     </div>
   );
 }

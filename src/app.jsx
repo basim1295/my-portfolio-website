@@ -575,9 +575,9 @@ function Hero() {
             {p.intro}
           </p>
           <div style={{ marginTop: "var(--space-xxl)", display: "flex", gap: "var(--space-md)", flexWrap: "wrap" }}>
-            <Button href={p.resumeUrl}>{C.hero.resumeButton}</Button>
-            <Button href={p.linkedinUrl} variant="outline">{C.hero.linkedinButton}</Button>
-            <Button href={p.githubUrl} variant="outline">{C.hero.githubButton}</Button>
+            <Button href={p.resumeUrl} target="_blank" rel="noopener noreferrer">{C.hero.resumeButton}</Button>
+            <Button href={p.linkedinUrl} variant="outline" target="_blank" rel="noopener noreferrer">{C.hero.linkedinButton}</Button>
+            <Button href={p.githubUrl} variant="outline" target="_blank" rel="noopener noreferrer">{C.hero.githubButton}</Button>
           </div>
         </div>
         <div style={{ position: "relative" }}>

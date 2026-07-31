@@ -59,6 +59,15 @@ window.PortfolioData = {
         "AI-powered web app that tailors resumes to specific job descriptions using the Claude API — built and shipped end to end, from prompt design to production deployment.",
       link: "https://resume-tailor-omega-rosy.vercel.app",
     },
+    {
+      id: "ba-customer-behaviour",
+      name: "British Airways — Customer Behaviour",
+      specs: "Forage virtual experience · web scraping · NLP · predictive modelling",
+      image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80",
+      description:
+        "Scraped customer reviews for British Airways and applied NLP — sentiment and topic modelling — to surface what drives satisfaction and frustration. Then built a predictive model to identify the strongest signals behind a customer's likelihood to book.",
+      link: "https://github.com/basim1295/british-airways-customer-behaviour-forage",
+    },
   //   {
   //     id: "byjus-workflow",
   //     name: "Live Classes Workflow",

@@ -3,14 +3,14 @@
 window.PortfolioData = {
   profile: {
     name: "BASIM SHABIR",
-    tagline: "BUILDING TOWARD A CAREER IN DATA & AI CONSULTING",
+    tagline: "BUILDING A CAREER IN THE DATA & AI SPACE",
     // location: "Melbourne, VIC · Australia",
     resumeUrl: "assets/Basim_Shabir_resume.pdf",
     linkedinUrl: "https://linkedin.com/in/basimshabir",
     githubUrl: "https://github.com/basim1295",
     email: "basimkhan09@gmail.com",
     portrait: "assets/portrait.jpg",
-    intro: "I'm happiest when I'm standing between a technical problem and the person who actually has to use the answer. My thesis with Alfred Health on using ML in determining patient outcomes, bridging teams at my worplace - BYJU'S, and leading a 2000+ members strong student team at Monash have all pointed me the same direction: someone who wants to take technical understanding, use his peoples skills and actually close the gap with it. I want to help people see what data science and AI really are, and how they can do good beyond the hype. That's the exactly why data & AI consulting compliments me, and it's where I'm headed.",
+    intro: "I'm happiest when I'm standing between a technical problem and the person who actually has to use the answer. My thesis with Alfred Health on using ML in determining patient outcomes, bridging teams at my workplace — BYJU'S, and leading a 2000+ members strong student team at Monash have all pointed me the same direction: someone who wants to take technical understanding, use his people skills and actually close the gap with it. I want to help people see what data science and AI really are, and how they can do good beyond the hype. From full-stack AI apps to applied data science to pure AI projects, I've worked across the whole space — and that's where I want to keep building my career.",
   },
 
   education: [
